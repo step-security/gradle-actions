@@ -1,0 +1,17 @@
+name: CI-validate-wrappers
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - uses: ./wrapper-validation
+        with:
+          allow-checksums: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
