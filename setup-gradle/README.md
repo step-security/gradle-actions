@@ -19,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Setup Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: 17
     - name: Setup Gradle
-      uses: gstep-security/gradle-actions/setup-gradle@v5
+      uses: step-security/gradle-actions/setup-gradle@v5
     - name: Build with Gradle
       run: ./gradlew build
 ```

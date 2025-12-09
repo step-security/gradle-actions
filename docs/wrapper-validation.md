@@ -4,12 +4,6 @@ This action validates the checksums of _all_ [Gradle Wrapper](https://docs.gradl
 
 The action should be run in the root of the repository, as it will recursively search for any files named `gradle-wrapper.jar`.
 
-> [!NOTE]
-> Starting with v4 the `setup-gradle` action will automatically [perform wrapper validation](../docs/setup-gradle.md#gradle-wrapper-validation)
-> on each execution.
-> 
-> If you are using `setup-gradle` in your workflows, it is unlikely that you will need to use the `wrapper-validation` action.
-
 ## The Gradle Wrapper Problem in Open Source
 
 The `gradle-wrapper.jar` is a binary blob of executable code that is checked into nearly
@@ -50,10 +44,10 @@ We created an example [Homoglyph attack PR here](https://github.com/JLLeitschuh/
 Simply add this action to your workflow **after** having checked out your source tree and **before** running any Gradle build:
 
 ```yaml
-uses: gradle/actions/wrapper-validation@v5
+uses: step-security/gradle-actions/wrapper-validation@v5
 ```
 
-This action step should precede any step using `gradle/gradle-build-action` or `gradle/actions/setup-gradle`.
+This action step should precede any step using `gradle/gradle-build-action` or `step-security/gradle-actions/setup-gradle`.
 
 ### Add a new dedicated Workflow
 
@@ -72,8 +66,8 @@ jobs:
     name: "Validation"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: gradle/actions/wrapper-validation@v5
+      - uses: actions/checkout@v6
+      - uses: step-security/gradle-actions/wrapper-validation@v5
 ```
 
 ## Contributing to an external GitHub Repository
@@ -92,7 +86,7 @@ Simply add a new file named `.github/workflows/gradle-wrapper-validation.yml` wi
 
 We recommend the message commit contents of:
  - Title: `Official Gradle Wrapper Validation Action`
- - Body (at minimum): `See: https://github.com/gradle/actions/wrapper-validation`
+ - Body (at minimum): `See: https://github.com/step-security/gradle-actions/wrapper-validation`
 
 From there, you can easily follow the rest of the prompts to create a Pull Request against the project.
 
@@ -120,7 +114,7 @@ restore these Jars on checkout. Without this, only a pointer to the Wrapper Jar 
 
 ```
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           lfs: true  # gradle-wrapper.jar verification will fail without this
 ```

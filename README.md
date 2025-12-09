@@ -1,7 +1,5 @@
 # GitHub Actions for Gradle builds
 
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/step-security/gradle-actions/badge)](https://scorecard.dev/viewer/?uri=github.com/step-security/gradle-actions)
-
 This repository contains a set of GitHub Actions that are useful for building Gradle projects on GitHub.
 
 ## The `setup-gradle` action
@@ -25,9 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Setup Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: 17
@@ -63,9 +61,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: Setup Java
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: 17
@@ -78,11 +76,6 @@ See the [full action documentation](docs/dependency-submission.md) for more adva
 ## The `wrapper-validation` action
 
 The `wrapper-validation` action validates the checksums of _all_ [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) JAR files present in the repository and fails if any unknown Gradle Wrapper JAR files are found.
-
-The action should be run in the root of the repository, as it will recursively search for any files named `gradle-wrapper.jar`.
-
-Starting with v4 the `setup-gradle` action will [perform wrapper validation](docs/setup-gradle.md#gradle-wrapper-validation) on each execution.
-If you are using `setup-gradle` in your workflows, it is unlikely that you will need to use the `wrapper-validation` action.
 
 ### Example workflow
 
@@ -98,7 +91,7 @@ jobs:
     name: "Validation"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: step-security/gradle-actions/wrapper-validation@v5
 ```
 
