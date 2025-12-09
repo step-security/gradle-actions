@@ -36,6 +36,16 @@ jobs:
       with:
         java-version: '17'
 
+    - name: Setup Java 16 toolchain
+      uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+      with:
+        distribution: 'temurin'
+        java-version: '16'
+
+    - name: Set Java 17 as default
+      shell: bash
+      run: echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+
     - name: Setup Gradle
       uses: ./setup-gradle
       with:
@@ -60,6 +70,16 @@ jobs:
       uses: ./.github/actions/init-integ-test
       with:
         java-version: '17'
+
+    - name: Setup Java 16 toolchain
+      uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+      with:
+        distribution: 'temurin'
+        java-version: '16'
+
+    - name: Set Java 17 as default
+      shell: bash
+      run: echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
 
     - name: Setup Gradle
       uses: ./setup-gradle

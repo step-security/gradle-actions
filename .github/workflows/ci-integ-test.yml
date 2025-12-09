@@ -23,7 +23,6 @@ jobs:
     - name: Checkout sources
       uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
     - name: Build and upload distribution
-      if: ${{ needs.determine-suite.outputs.suite != 'full' }}
       uses: ./.github/actions/build-dist
 
   caching-integ-tests:
