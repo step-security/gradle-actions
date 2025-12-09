@@ -23,7 +23,7 @@ export async function run(): Promise<void> {
 
         if (getActionId() === 'gradle/gradle-build-action') {
             failOnUseOfRemovedFeature(
-                'The action `gradle/gradle-build-action` has been replaced by `gradle/actions/setup-gradle`'
+                'The action `gradle/gradle-build-action` has been replaced by `step-security/gradle-actions/setup-gradle`'
             )
         }
 

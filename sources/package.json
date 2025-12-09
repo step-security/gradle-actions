@@ -71,11 +71,5 @@
     "prettier": "3.6.2",
     "ts-jest": "29.4.5",
     "typescript": "5.9.3"
-  },
-  "overrides": {
-    "@azure/logger": "1.1.4",
-    "@octokit/request": "8.4.1",
-    "@octokit/request-error": "5.1.1",
-    "@octokit/plugin-paginate-rest": "9.2.2"
   }
 }

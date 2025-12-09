@@ -13,7 +13,7 @@ def GE_PLUGIN_ID = "com.gradle.enterprise"
 def GE_EXTENSION = "gradleEnterprise"
 
 if (System.properties[SKIP_BUILD_CAPTURE] ?: System.getenv(SKIP_BUILD_CAPTURE)) {
-    logger.lifecycle("gradle/actions: Not capturing build results")
+    logger.lifecycle("step-security/gradle-actions: Not capturing build results")
     return
 }
 
@@ -130,7 +130,7 @@ void captureUsingBuildScanPublished(buildScanExtension, String invocationId, Res
 }
 
 class ResultsWriter {
-    private final logger = LoggerFactory.getLogger("gradle/actions")
+    private final logger = LoggerFactory.getLogger("step-security/gradle-actions")
 
     void writeToResultsFile(String subDir, String invocationId, def content) {
         def runnerTempDir = System.getProperty("RUNNER_TEMP") ?: System.getenv("RUNNER_TEMP")
@@ -144,7 +144,7 @@ class ResultsWriter {
             buildResultsDir.mkdirs()
             def buildResultsFile = new File(buildResultsDir, githubActionStep + invocationId + ".json")
             if (!buildResultsFile.exists()) {
-                logger.lifecycle("gradle/actions: Writing build results to ${buildResultsFile}")
+                logger.lifecycle("step-security/gradle-actions: Writing build results to ${buildResultsFile}")
                 buildResultsFile << groovy.json.JsonOutput.toJson(content)
             }
         } catch (Exception e) {

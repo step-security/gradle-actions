@@ -34,7 +34,7 @@ export async function setup(
 
     // Bypass setup on all but first action step in workflow.
     if (process.env[GRADLE_SETUP_VAR]) {
-        core.info('Gradle setup only performed on first gradle/actions step in workflow.')
+        core.info('Gradle setup only performed on first step-security/gradle-actions step in workflow.')
         return false
     }
     // Record setup complete: visible to all subsequent actions and prevents duplicate setup
@@ -60,7 +60,7 @@ export async function setup(
 
 export async function complete(cacheConfig: CacheConfig, summaryConfig: SummaryConfig): Promise<boolean> {
     if (!core.getState(GRADLE_SETUP_VAR)) {
-        core.info('Gradle setup post-action only performed for first gradle/actions step in workflow.')
+        core.info('Gradle setup post-action only performed for first step-security/gradle-actions step in workflow.')
         return false
     }
     core.info('In post-action step')

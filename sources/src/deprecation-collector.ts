@@ -1,7 +1,8 @@
 import * as core from '@actions/core'
 import {getActionId} from './configuration'
 
-const DEPRECATION_UPGRADE_PAGE = 'https://github.com/gradle/actions/blob/main/docs/deprecation-upgrade-guide.md'
+const DEPRECATION_UPGRADE_PAGE =
+    'https://github.com/step-security/gradle-actions/blob/main/docs/deprecation-upgrade-guide.md'
 const recordedDeprecations: Deprecation[] = []
 const recordedErrors: string[] = []
 

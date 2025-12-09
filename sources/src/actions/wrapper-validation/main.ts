@@ -13,7 +13,7 @@ export async function run(): Promise<void> {
 
         if (getActionId() === 'gradle/wrapper-validation-action') {
             failOnUseOfRemovedFeature(
-                'The action `gradle/wrapper-validation-action` has been replaced by `gradle/actions/wrapper-validation`'
+                'The action `gradle/wrapper-validation-action` has been replaced by `step-security/gradle-actions/wrapper-validation`'
             )
         }
 
@@ -37,7 +37,7 @@ export async function run(): Promise<void> {
             }
         } else {
             core.setFailed(
-                `At least one Gradle Wrapper Jar failed validation!\n  See https://github.com/gradle/actions/blob/main/docs/wrapper-validation.md#validation-failures\n${result.toDisplayString()}`
+                `At least one Gradle Wrapper Jar failed validation!\n  See https://github.com/step-security/gradle-actions/blob/main/docs/wrapper-validation.md#validation-failures\n${result.toDisplayString()}`
             )
             if (result.invalid.length > 0) {
                 core.setOutput('failed-wrapper', `${result.invalid.map(w => w.path).join('|')}`)

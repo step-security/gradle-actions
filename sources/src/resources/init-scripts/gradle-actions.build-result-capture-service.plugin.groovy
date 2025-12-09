@@ -21,7 +21,7 @@ settingsEvaluated { settings ->
 }
 
 abstract class BuildResultsRecorder implements BuildService<BuildResultsRecorder.Params>, BuildOperationListener, AutoCloseable {
-    private final logger = LoggerFactory.getLogger("gradle/actions")
+    private final logger = LoggerFactory.getLogger("step-security/gradle-actions")
     private boolean buildFailed = false
     private boolean configCacheHit = true
     interface Params extends BuildServiceParameters {
@@ -72,7 +72,7 @@ abstract class BuildResultsRecorder implements BuildService<BuildResultsRecorder
             buildResultsDir.mkdirs()
             def buildResultsFile = new File(buildResultsDir, githubActionStep + getParameters().getInvocationId().get() + ".json")
             if (!buildResultsFile.exists()) {
-                logger.lifecycle("gradle/actions: Writing build results to ${buildResultsFile}")
+                logger.lifecycle("step-security/gradle-actions: Writing build results to ${buildResultsFile}")
                 buildResultsFile << groovy.json.JsonOutput.toJson(buildResults)
             }
         } catch (Exception e) {

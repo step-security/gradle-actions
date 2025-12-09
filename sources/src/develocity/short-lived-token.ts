@@ -80,7 +80,7 @@ class ShortLivedTokenClient {
     retryInterval = 1000
 
     constructor(develocityAllowUntrustedServer: boolean | undefined) {
-        this.httpc = new httpm.HttpClient('gradle/actions/setup-gradle', undefined, {
+        this.httpc = new httpm.HttpClient('step-security/gradle-actions/setup-gradle', undefined, {
             ignoreSslError: develocityAllowUntrustedServer
         })
     }
