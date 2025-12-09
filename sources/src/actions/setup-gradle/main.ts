@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
             )
         }
 
-        setActionId('gradle/actions/setup-gradle')
+        setActionId('step-security/gradle-actions/setup-gradle')
 
         // Configure Gradle environment (Gradle User Home)
         await setupGradle.setup(new CacheConfig(), new BuildScanConfig(), new WrapperValidationConfig())

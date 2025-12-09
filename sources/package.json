@@ -21,8 +21,8 @@
     "all": "npm run build && npm test"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gradle/actions.git"
+    "type": "git", 
+    "url": "git+https://github.com/step-security/gradle-actions.git"
   },
   "keywords": [
     "github",

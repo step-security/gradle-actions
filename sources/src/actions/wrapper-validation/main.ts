@@ -17,7 +17,7 @@ export async function run(): Promise<void> {
             )
         }
 
-        setActionId('gradle/actions/wrapper-validation')
+        setActionId('step-security/gradle-actions/wrapper-validation')
 
         const result = await validate.findInvalidWrapperJars(
             path.resolve('.'),
