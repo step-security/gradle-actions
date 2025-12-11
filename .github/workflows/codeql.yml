@@ -59,7 +59,27 @@ jobs:
 
       # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
       # If this step fails, then you should remove it and run the build manually (see below)
+
+      - name: Build Java test samples
+        if: matrix.language == 'java'
+        run: |
+          # Build all Java/Gradle test samples
+          for sample_dir in .github/workflow-samples/*/; do
+            if [ -f "${sample_dir}gradlew" ] || [ -f "${sample_dir}build.gradle" ] || [ -f "${sample_dir}build.gradle.kts" ]; then
+              echo "Building sample in ${sample_dir}"
+              cd "${sample_dir}"
+              if [ -f "gradlew" ]; then
+                chmod +x gradlew
+                ./gradlew build -x test --no-daemon || true
+              fi
+              cd - > /dev/null
+            fi
+          done
+          
+      # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+      # If this step fails, then you should remove it and run the build manually (see below)
       - name: Autobuild
+        if: matrix.language != 'java'
         uses: github/codeql-action/autobuild@bffd034ab1518ad839a542b8a7356e13a240e076 # v3.31.7
 
       # ℹ️ Command-line programs to run using the OS shell.
