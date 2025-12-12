@@ -16,6 +16,11 @@ on:
         required: false
         type: string
         default: sources
+      node_version:
+        description: "Specify Node.js version (e.g., '18', '20', 'lts/*')"
+        required: false
+        type: string
+        default: "24"
 
   schedule:
     - cron: "0 0 * * 1"
@@ -27,6 +32,8 @@ jobs:
       force: ${{ inputs.force || false }}
       base_branch: ${{ inputs.base_branch || 'main' }}
       working_directory: ${{github.event.inputs.working_directory || 'sources'}}
+      node_version: ${{ github.event.inputs.node_version}}
+
 
 permissions:
   contents: write
