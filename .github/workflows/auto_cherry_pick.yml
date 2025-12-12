@@ -11,6 +11,10 @@ on:
         description: "Run mode: cherry-pick or verify"
         required: false
         default: "cherry-pick"
+      script:
+        description: "Specify a script to run after audit fix"
+        required: false
+        default: "./build build" 
 
   pull_request:
     types: [opened, synchronize, labeled]
@@ -30,3 +34,4 @@ jobs:
       repo-name: "actions"
       base_branch: ${{ inputs.base_branch }}
       mode: ${{ github.event_name == 'pull_request' && 'verify' || inputs.mode }}
+      script: ${{ inputs.script }}
