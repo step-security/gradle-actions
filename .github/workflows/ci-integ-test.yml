@@ -7,7 +7,7 @@ on:
     branches:
     - 'main'
     paths-ignore:
-    - 'dist/**'
+    - 'sources/dist/**'
 
 concurrency:
   group: integ-test
