@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: true
+      node_version:
+        description: "Specify Node.js version (e.g., '18', '20', 'lts/*')"
+        required: false
+        type: string
+        default: "24"
 
 permissions:
   contents: read
@@ -32,3 +37,4 @@ jobs:
       tag: "${{ github.event.inputs.tag }}"
       working_directory: ${{github.event.inputs.working_directory}}
       setup_node: ${{ github.event.inputs.setup_node}}
+      node_version: ${{ github.event.inputs.node_version}}
