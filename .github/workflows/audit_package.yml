@@ -32,7 +32,7 @@ jobs:
       force: ${{ inputs.force || false }}
       base_branch: ${{ inputs.base_branch || 'main' }}
       working_directory: ${{github.event.inputs.working_directory || 'sources'}}
-      node_version: ${{ github.event.inputs.node_version}}
+      node_version: ${{ github.event.inputs.node_version || '24'}}
 
 
 permissions:
