@@ -36,5 +36,5 @@ jobs:
     with:
       tag: "${{ github.event.inputs.tag }}"
       working_directory: ${{github.event.inputs.working_directory}}
-      setup_node: ${{ github.event.inputs.setup_node}}
+      setup_node: ${{ github.event.inputs.setup_node == 'true' }}
       node_version: ${{ github.event.inputs.node_version}}
