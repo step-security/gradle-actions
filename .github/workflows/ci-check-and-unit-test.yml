@@ -6,7 +6,7 @@ on:
     - 'main'
     - 'release/**'
     paths-ignore:
-    - 'dist/**'
+    - 'sources/dist/**'
   pull_request:
 
 permissions:

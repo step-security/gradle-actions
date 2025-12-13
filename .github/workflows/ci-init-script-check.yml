@@ -5,7 +5,7 @@ on:
     branches:
     - 'main'
     paths-ignore:
-    - 'dist/**'
+    - 'sources/dist/**'
   pull_request:
     paths:
       - '.github/workflows/ci-init-script-check.yml'
