@@ -167477,19 +167477,40 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.validateSubscription = validateSubscription;
 const axios_1 = __importStar(__nccwpck_require__(87269));
 const core = __importStar(__nccwpck_require__(37484));
+const fs = __importStar(__nccwpck_require__(79896));
 async function validateSubscription() {
-    const API_URL = `https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/subscription`;
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    let repoPrivate;
+    if (eventPath && fs.existsSync(eventPath)) {
+        const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+        repoPrivate = eventData?.repository?.private;
+    }
+    const upstream = 'gradle/actions';
+    const action = process.env.GITHUB_ACTION_REPOSITORY;
+    const docsUrl = 'https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions';
+    core.info('');
+    core.info('[1;36mStepSecurity Maintained Action[0m');
+    core.info(`Secure drop-in replacement for ${upstream}`);
+    if (repoPrivate === false)
+        core.info('[32m✓ Free for public repositories[0m');
+    core.info(`[36mLearn more:[0m ${docsUrl}`);
+    core.info('');
+    if (repoPrivate === false)
+        return;
+    const serverUrl = process.env.GITHUB_SERVER_URL || 'https://github.com';
+    const body = { action: action || '' };
+    if (serverUrl !== 'https://github.com')
+        body.ghes_server = serverUrl;
     try {
-        await axios_1.default.get(API_URL, { timeout: 3000 });
+        await axios_1.default.post(`https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/maintained-actions-subscription`, body, { timeout: 3000 });
     }
     catch (error) {
         if ((0, axios_1.isAxiosError)(error) && error.response?.status === 403) {
-            core.error('Subscription is not valid. Reach out to support@stepsecurity.io');
+            core.error(`[1;31mThis action requires a StepSecurity subscription for private repositories.[0m`);
+            core.error(`[31mLearn how to enable a subscription: ${docsUrl}[0m`);
             process.exit(1);
         }
-        else {
-            core.info('Timeout or API not reachable. Continuing to next step.');
-        }
+        core.info('Timeout or API not reachable. Continuing to next step.');
     }
 }
 
@@ -167542,6 +167563,7 @@ const fs = __importStar(__nccwpck_require__(79896));
 const path = __importStar(__nccwpck_require__(16928));
 const gradle_1 = __nccwpck_require__(93439);
 class BuildResults {
+    results;
     constructor(results) {
         this.results = results;
     }
@@ -167671,6 +167693,8 @@ const provisioner = __importStar(__nccwpck_require__(7145));
 const gradle_1 = __nccwpck_require__(93439);
 const gradlew_1 = __nccwpck_require__(46186);
 class CacheCleaner {
+    gradleUserHome;
+    tmpDir;
     constructor(gradleUserHome, tmpDir) {
         this.gradleUserHome = gradleUserHome;
         this.tmpDir = tmpDir;
@@ -167811,6 +167835,8 @@ const CACHE_KEY_JOB_VAR = 'GRADLE_BUILD_ACTION_CACHE_KEY_JOB';
 const CACHE_KEY_JOB_INSTANCE_VAR = 'GRADLE_BUILD_ACTION_CACHE_KEY_JOB_INSTANCE';
 const CACHE_KEY_JOB_EXECUTION_VAR = 'GRADLE_BUILD_ACTION_CACHE_KEY_JOB_EXECUTION';
 class CacheKey {
+    key;
+    restoreKeys;
     constructor(key, restoreKeys) {
         this.key = key;
         this.restoreKeys = restoreKeys;
@@ -167909,14 +167935,12 @@ exports.DEFAULT_CLEANUP_DISABLED_REASON = `[Cache cleanup](https://github.com/st
 exports.CLEANUP_DISABLED_DUE_TO_FAILURE = '[Cache cleanup was disabled due to build failure](https://github.com/step-security/gradle-actions/blob/main/docs/setup-gradle.md#configuring-cache-cleanup). Use `cache-cleanup: always` to override this behavior.';
 exports.CLEANUP_DISABLED_DUE_TO_CONFIG_CACHE_HIT = '[Cache cleanup was disabled due to configuration-cache reuse](https://github.com/step-security/gradle-actions/blob/main/docs/setup-gradle.md#configuring-cache-cleanup). This is expected.';
 class CacheListener {
-    constructor() {
-        this.cacheEntries = [];
-        this.cacheReadOnly = false;
-        this.cacheWriteOnly = false;
-        this.cacheDisabled = false;
-        this.cacheStatusReason = exports.DEFAULT_CACHE_ENABLED_REASON;
-        this.cacheCleanupMessage = exports.DEFAULT_CLEANUP_DISABLED_REASON;
-    }
+    cacheEntries = [];
+    cacheReadOnly = false;
+    cacheWriteOnly = false;
+    cacheDisabled = false;
+    cacheStatusReason = exports.DEFAULT_CACHE_ENABLED_REASON;
+    cacheCleanupMessage = exports.DEFAULT_CLEANUP_DISABLED_REASON;
     get fullyRestored() {
         return this.cacheEntries.every(x => !x.wasRequestedButNotRestored());
     }
@@ -167979,6 +168003,17 @@ class CacheListener {
 }
 exports.CacheListener = CacheListener;
 class CacheEntryListener {
+    entryName;
+    requestedKey;
+    requestedRestoreKeys;
+    restoredKey;
+    restoredSize;
+    restoredTime;
+    notRestored;
+    savedKey;
+    savedSize;
+    savedTime;
+    notSaved;
     constructor(entryName) {
         this.entryName = entryName;
     }
@@ -168489,6 +168524,9 @@ const gradle_1 = __nccwpck_require__(93439);
 const SKIP_RESTORE_VAR = 'GRADLE_BUILD_ACTION_SKIP_RESTORE';
 const CACHE_PROTOCOL_VERSION = 'v1';
 class ExtractedCacheEntry {
+    artifactType;
+    pattern;
+    cacheKey;
     constructor(artifactType, pattern, cacheKey) {
         this.artifactType = artifactType;
         this.pattern = pattern;
@@ -168496,13 +168534,15 @@ class ExtractedCacheEntry {
     }
 }
 class ExtractedCacheEntryMetadata {
-    constructor() {
-        this.entries = [];
-    }
+    entries = [];
 }
 class ExtractedCacheEntryDefinition {
+    artifactType;
+    pattern;
+    bundle;
+    uniqueFileNames = true;
+    notCacheableReason;
     constructor(artifactType, pattern, bundle) {
-        this.uniqueFileNames = true;
         this.artifactType = artifactType;
         this.pattern = pattern;
         this.bundle = bundle;
@@ -168517,6 +168557,9 @@ class ExtractedCacheEntryDefinition {
     }
 }
 class AbstractEntryExtractor {
+    cacheConfig;
+    gradleUserHome;
+    extractorName;
     constructor(gradleUserHome, extractorName, cacheConfig) {
         this.gradleUserHome = gradleUserHome;
         this.extractorName = extractorName;
@@ -168804,9 +168847,12 @@ const gradle_home_extry_extractor_1 = __nccwpck_require__(99914);
 const gradle_user_home_utils_1 = __nccwpck_require__(66110);
 const RESTORED_CACHE_KEY_KEY = 'restored-cache-key';
 class GradleUserHomeCache {
+    cacheName = 'home';
+    cacheDescription = 'Gradle User Home';
+    userHome;
+    gradleUserHome;
+    cacheConfig;
     constructor(userHome, gradleUserHome, cacheConfig) {
-        this.cacheName = 'home';
-        this.cacheDescription = 'Gradle User Home';
         this.userHome = userHome;
         this.gradleUserHome = gradleUserHome;
         this.cacheConfig = cacheConfig;
@@ -169311,6 +169357,8 @@ var JobSummaryOption;
     JobSummaryOption["OnFailure"] = "on-failure";
 })(JobSummaryOption || (exports.JobSummaryOption = JobSummaryOption = {}));
 class BuildScanConfig {
+    static DevelocityAccessKeyEnvVar = 'DEVELOCITY_ACCESS_KEY';
+    static GradleEnterpriseAccessKeyEnvVar = 'GRADLE_ENTERPRISE_ACCESS_KEY';
     getBuildScanPublishEnabled() {
         return getBooleanInput('build-scan-publish') && this.verifyTermsOfUseAgreement();
     }
@@ -169364,8 +169412,6 @@ class BuildScanConfig {
     }
 }
 exports.BuildScanConfig = BuildScanConfig;
-BuildScanConfig.DevelocityAccessKeyEnvVar = 'DEVELOCITY_ACCESS_KEY';
-BuildScanConfig.GradleEnterpriseAccessKeyEnvVar = 'GRADLE_ENTERPRISE_ACCESS_KEY';
 class PluginRepositoryConfig {
     getUrl() {
         return getOptionalInput('gradle-plugin-repository-url');
@@ -169513,6 +169559,7 @@ const exec = __importStar(__nccwpck_require__(95236));
 const fs = __importStar(__nccwpck_require__(79896));
 const path = __importStar(__nccwpck_require__(16928));
 class DaemonController {
+    gradleHomes;
     constructor(buildResults) {
         this.gradleHomes = buildResults.uniqueGradleHomes();
     }
@@ -169878,6 +169925,7 @@ const DEPRECATION_UPGRADE_PAGE = 'https://github.com/step-security/gradle-action
 const recordedDeprecations = [];
 const recordedErrors = [];
 class Deprecation {
+    message;
     constructor(message) {
         this.message = message;
     }
@@ -170117,9 +170165,10 @@ async function getToken(accessKey, allowUntrustedServer, expiry) {
     return empty;
 }
 class ShortLivedTokenClient {
+    httpc;
+    maxRetries = 3;
+    retryInterval = 1000;
     constructor(develocityAllowUntrustedServer) {
-        this.maxRetries = 3;
-        this.retryInterval = 1000;
         this.httpc = new httpm.HttpClient('step-security/gradle-actions/setup-gradle', undefined, {
             ignoreSslError: develocityAllowUntrustedServer
         });
@@ -170158,12 +170207,16 @@ class ShortLivedTokenClient {
     }
 }
 class DevelocityAccessCredentials {
+    static accessKeyRegexp = /^([^;=\s]+=\w+)(;[^;=\s]+=\w+)*$/;
+    keys;
     constructor(allKeys) {
         this.keys = allKeys;
     }
     static of(allKeys) {
         return new DevelocityAccessCredentials(allKeys);
     }
+    static keyDelimiter = ';';
+    static hostDelimiter = '=';
     static parse(rawKey) {
         if (!this.isValid(rawKey)) {
             return null;
@@ -170186,9 +170239,6 @@ class DevelocityAccessCredentials {
     }
 }
 exports.DevelocityAccessCredentials = DevelocityAccessCredentials;
-DevelocityAccessCredentials.accessKeyRegexp = /^([^;=\s]+=\w+)(;[^;=\s]+=\w+)*$/;
-DevelocityAccessCredentials.keyDelimiter = ';';
-DevelocityAccessCredentials.hostDelimiter = '=';
 
 
 /***/ }),
@@ -170403,6 +170453,11 @@ function parseGradleVersionFromOutput(output) {
     return versionString;
 }
 class GradleVersion {
+    version;
+    static PATTERN = /((\d+)(\.\d+)+)(-([a-z]+)-(\w+))?(-(SNAPSHOT|\d{14}([-+]\d{4})?))?/;
+    versionPart;
+    stagePart;
+    snapshotPart;
     constructor(version) {
         this.version = version;
         const matcher = GradleVersion.PATTERN.exec(version);
@@ -170414,7 +170469,6 @@ class GradleVersion {
         this.snapshotPart = matcher[7];
     }
 }
-GradleVersion.PATTERN = /((\d+)(\.\d+)+)(-([a-z]+)-(\w+))?(-(SNAPSHOT|\d{14}([-+]\d{4})?))?/;
 
 
 /***/ }),
@@ -171112,6 +171166,7 @@ const path_1 = __importDefault(__nccwpck_require__(16928));
 const configuration_1 = __nccwpck_require__(66081);
 const core = __importStar(__nccwpck_require__(37484));
 class ChecksumCache {
+    cacheFile;
     constructor(gradleUserHome) {
         this.cacheFile = path_1.default.resolve(gradleUserHome, configuration_1.ACTION_METADATA_DIR, 'valid-wrappers.json');
     }
@@ -171187,10 +171242,8 @@ const httpm = __importStar(__nccwpck_require__(54844));
 const wrapper_checksums_json_1 = __importDefault(__nccwpck_require__(46629));
 const httpc = new httpm.HttpClient('gradle/wrapper-validation-action', undefined, { allowRetries: true, maxRetries: 3 });
 class WrapperChecksums {
-    constructor() {
-        this.checksums = new Map();
-        this.versions = new Set();
-    }
+    checksums = new Map();
+    versions = new Set();
     add(version, checksum) {
         if (this.checksums.has(checksum)) {
             this.checksums.get(checksum).add(version);
@@ -171484,8 +171537,10 @@ async function findInvalidWrapperJars(gitRepoRoot, allowSnapshots, allowedChecks
     return result;
 }
 class ValidationResult {
+    valid;
+    invalid;
+    fetchedChecksums = false;
     constructor(valid, invalid) {
-        this.fetchedChecksums = false;
         this.valid = valid;
         this.invalid = invalid;
     }
@@ -171510,6 +171565,8 @@ class ValidationResult {
 }
 exports.ValidationResult = ValidationResult;
 class WrapperJar {
+    path;
+    checksum;
     constructor(path, checksum) {
         this.path = path;
         this.checksum = checksum;

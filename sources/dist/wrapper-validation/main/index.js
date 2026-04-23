@@ -121498,19 +121498,40 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.validateSubscription = validateSubscription;
 const axios_1 = __importStar(__nccwpck_require__(87269));
 const core = __importStar(__nccwpck_require__(37484));
+const fs = __importStar(__nccwpck_require__(79896));
 async function validateSubscription() {
-    const API_URL = `https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/subscription`;
+    const eventPath = process.env.GITHUB_EVENT_PATH;
+    let repoPrivate;
+    if (eventPath && fs.existsSync(eventPath)) {
+        const eventData = JSON.parse(fs.readFileSync(eventPath, 'utf8'));
+        repoPrivate = eventData?.repository?.private;
+    }
+    const upstream = 'gradle/actions';
+    const action = process.env.GITHUB_ACTION_REPOSITORY;
+    const docsUrl = 'https://docs.stepsecurity.io/actions/stepsecurity-maintained-actions';
+    core.info('');
+    core.info('[1;36mStepSecurity Maintained Action[0m');
+    core.info(`Secure drop-in replacement for ${upstream}`);
+    if (repoPrivate === false)
+        core.info('[32m✓ Free for public repositories[0m');
+    core.info(`[36mLearn more:[0m ${docsUrl}`);
+    core.info('');
+    if (repoPrivate === false)
+        return;
+    const serverUrl = process.env.GITHUB_SERVER_URL || 'https://github.com';
+    const body = { action: action || '' };
+    if (serverUrl !== 'https://github.com')
+        body.ghes_server = serverUrl;
     try {
-        await axios_1.default.get(API_URL, { timeout: 3000 });
+        await axios_1.default.post(`https://agent.api.stepsecurity.io/v1/github/${process.env.GITHUB_REPOSITORY}/actions/maintained-actions-subscription`, body, { timeout: 3000 });
     }
     catch (error) {
         if ((0, axios_1.isAxiosError)(error) && error.response?.status === 403) {
-            core.error('Subscription is not valid. Reach out to support@stepsecurity.io');
+            core.error(`[1;31mThis action requires a StepSecurity subscription for private repositories.[0m`);
+            core.error(`[31mLearn how to enable a subscription: ${docsUrl}[0m`);
             process.exit(1);
         }
-        else {
-            core.info('Timeout or API not reachable. Continuing to next step.');
-        }
+        core.info('Timeout or API not reachable. Continuing to next step.');
     }
 }
 
@@ -121854,6 +121875,8 @@ var JobSummaryOption;
     JobSummaryOption["OnFailure"] = "on-failure";
 })(JobSummaryOption || (exports.JobSummaryOption = JobSummaryOption = {}));
 class BuildScanConfig {
+    static DevelocityAccessKeyEnvVar = 'DEVELOCITY_ACCESS_KEY';
+    static GradleEnterpriseAccessKeyEnvVar = 'GRADLE_ENTERPRISE_ACCESS_KEY';
     getBuildScanPublishEnabled() {
         return getBooleanInput('build-scan-publish') && this.verifyTermsOfUseAgreement();
     }
@@ -121907,8 +121930,6 @@ class BuildScanConfig {
     }
 }
 exports.BuildScanConfig = BuildScanConfig;
-BuildScanConfig.DevelocityAccessKeyEnvVar = 'DEVELOCITY_ACCESS_KEY';
-BuildScanConfig.GradleEnterpriseAccessKeyEnvVar = 'GRADLE_ENTERPRISE_ACCESS_KEY';
 class PluginRepositoryConfig {
     getUrl() {
         return getOptionalInput('gradle-plugin-repository-url');
@@ -122064,6 +122085,7 @@ const DEPRECATION_UPGRADE_PAGE = 'https://github.com/step-security/gradle-action
 const recordedDeprecations = [];
 const recordedErrors = [];
 class Deprecation {
+    message;
     constructor(message) {
         this.message = message;
     }
@@ -122268,10 +122290,8 @@ const httpm = __importStar(__nccwpck_require__(54844));
 const wrapper_checksums_json_1 = __importDefault(__nccwpck_require__(46629));
 const httpc = new httpm.HttpClient('gradle/wrapper-validation-action', undefined, { allowRetries: true, maxRetries: 3 });
 class WrapperChecksums {
-    constructor() {
-        this.checksums = new Map();
-        this.versions = new Set();
-    }
+    checksums = new Map();
+    versions = new Set();
     add(version, checksum) {
         if (this.checksums.has(checksum)) {
             this.checksums.get(checksum).add(version);
@@ -122565,8 +122585,10 @@ async function findInvalidWrapperJars(gitRepoRoot, allowSnapshots, allowedChecks
     return result;
 }
 class ValidationResult {
+    valid;
+    invalid;
+    fetchedChecksums = false;
     constructor(valid, invalid) {
-        this.fetchedChecksums = false;
         this.valid = valid;
         this.invalid = invalid;
     }
@@ -122591,6 +122613,8 @@ class ValidationResult {
 }
 exports.ValidationResult = ValidationResult;
 class WrapperJar {
+    path;
+    checksum;
     constructor(path, checksum) {
         this.path = path;
         this.checksum = checksum;
