@@ -87,7 +87,7 @@ export async function loadVendoredCacheService(): Promise<CacheService> {
 
 function findVendoredLibraryPath(): string {
     const moduleDir = import.meta.dirname
-    const absolutePath = path.resolve(moduleDir, '../../../sources/vendor/gradle-actions-caching/index.js')
+    const absolutePath = path.resolve(moduleDir, '../../../../sources/vendor/gradle-actions-caching/index.js')
 
     if (fs.existsSync(absolutePath)) {
         return absolutePath

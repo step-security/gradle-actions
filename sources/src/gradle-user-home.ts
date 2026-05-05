@@ -84,9 +84,9 @@ export function configureInfoLogLevel(gradleUserHome: string): void {
 }
 
 function readResourceFileAsString(...paths: string[]): string {
-    // Resolving relative to `dist/<action>/main/index.js` will allow node to find the resource at runtime
+    // Resolving relative to `sources/dist/<action>/main/index.js` will allow node to find the resource at runtime
     const moduleDir = import.meta.dirname
-    const absolutePath = path.resolve(moduleDir, '..', '..', '..', 'sources', 'src', 'resources', ...paths)
+    const absolutePath = path.resolve(moduleDir, '..', '..', '..', '..', 'sources', 'src', 'resources', ...paths)
     return fs.readFileSync(absolutePath, 'utf8')
 }
 
