@@ -4,6 +4,12 @@ This action validates the checksums of _all_ [Gradle Wrapper](https://docs.gradl
 
 The action should be run in the root of the repository, as it will recursively search for any files named `gradle-wrapper.jar`.
 
+> [!NOTE]
+> Starting with v4 the `setup-gradle` action will automatically [perform wrapper validation](../docs/setup-gradle.md#gradle-wrapper-validation)
+> on each execution.
+> 
+> If you are using `setup-gradle` in your workflows, it is unlikely that you will need to use the `wrapper-validation` action.
+
 ## The Gradle Wrapper Problem in Open Source
 
 The `gradle-wrapper.jar` is a binary blob of executable code that is checked into nearly

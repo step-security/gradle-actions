@@ -12,6 +12,7 @@ on:
 
 env:
   SKIP_DIST: ${{ inputs.skip-dist }}
+  GRADLE_BUILD_ACTION_CACHE_KEY_PREFIX: wrapper-validation- # Avoid loading cache entries from other tests, that may have cached allowed wrapper checksums
 
 permissions:
   contents: read
@@ -138,10 +139,8 @@ jobs:
       id: action-test
       uses: ./wrapper-validation
       with:
-        # to allow the invalid wrapper jar present in test data
-        allow-checksums: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-        min-wrapper-count: 11
-      # Expected to fail; validated below
+        min-wrapper-count: 7
+      # There are only 6 wrappers in workflow-samples, so expected to fail
       continue-on-error: true
 
     - name: Check outcome

@@ -7,6 +7,7 @@ on:
     - 'main'
     paths:
     - 'sources/dist/**'
+    - 'sources/vendor/gradle-actions-caching/**'
 
 concurrency:
   group: integ-test
@@ -19,21 +20,32 @@ jobs:
   caching-integ-tests:
     uses: ./.github/workflows/suite-integ-test-caching.yml
     concurrency:
-      group: CI-integ-test-full
+      group: CI-integ-test-caching
       cancel-in-progress: false
     with:
-      runner-os: '["ubuntu-latest", "windows-latest", "macos-latest"]'
       skip-dist: true
     secrets: inherit
 
   other-integ-tests:
+    needs: caching-integ-tests
     permissions:
       contents: write
     uses: ./.github/workflows/suite-integ-test-other.yml
     concurrency:
-      group: CI-integ-test-full
+      group: CI-integ-test-other
       cancel-in-progress: false
     with:
-      runner-os: '["ubuntu-latest", "windows-latest", "macos-latest"]'
+      skip-dist: true
+    secrets: inherit
+
+  dependency-submission-integ-tests:
+    permissions:
+      contents: write
+    needs: other-integ-tests
+    uses: ./.github/workflows/suite-integ-test-dependency-submission.yml
+    concurrency:
+      group: CI-integ-test-dependency-submission
+      cancel-in-progress: false
+    with:
       skip-dist: true
     secrets: inherit

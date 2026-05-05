@@ -3,7 +3,7 @@ name: 'Build and upload distribution'
 runs:
   using: "composite"
   steps: 
-    - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
       with:
         node-version: 24
         cache: npm
@@ -18,7 +18,7 @@ runs:
       working-directory: sources
 
     - name: Upload distribution
-      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: dist
         path: sources/dist/

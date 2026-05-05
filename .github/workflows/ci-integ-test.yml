@@ -33,6 +33,9 @@ jobs:
   caching-integ-tests:
     needs: build-distribution
     uses: ./.github/workflows/suite-integ-test-caching.yml
+    concurrency:
+      group: CI-integ-test-caching
+      cancel-in-progress: false
     with:
       skip-dist: false
     secrets: inherit
@@ -40,8 +43,23 @@ jobs:
   other-integ-tests:
     permissions:
       contents: write
-    needs: build-distribution
+    needs: caching-integ-tests
     uses: ./.github/workflows/suite-integ-test-other.yml
+    concurrency:
+      group: CI-integ-test-other
+      cancel-in-progress: false
+    with:
+      skip-dist: false
+    secrets: inherit
+
+  dependency-submission-integ-tests:
+    permissions:
+      contents: write
+    needs: other-integ-tests
+    uses: ./.github/workflows/suite-integ-test-dependency-submission.yml
+    concurrency:
+      group: CI-integ-test-dependency-submission
+      cancel-in-progress: false
     with:
       skip-dist: false
     secrets: inherit

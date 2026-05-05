@@ -5,12 +5,9 @@ import * as validate from '../../wrapper-validation/validate'
 import {getActionId, setActionId} from '../../configuration'
 import {failOnUseOfRemovedFeature, emitDeprecationWarnings} from '../../deprecation-collector'
 import {handleMainActionError} from '../../errors'
-import {validateSubscription} from '../validate-subscription'
 
 export async function run(): Promise<void> {
     try {
-        await validateSubscription()
-
         if (getActionId() === 'gradle/wrapper-validation-action') {
             failOnUseOfRemovedFeature(
                 'The action `gradle/wrapper-validation-action` has been replaced by `step-security/gradle-actions/wrapper-validation`'
