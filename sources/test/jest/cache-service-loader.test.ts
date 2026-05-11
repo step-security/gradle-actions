@@ -1,6 +1,5 @@
 import {describe, expect, it, jest, beforeEach} from '@jest/globals'
 
-import {CacheProvider} from '../../src/configuration'
 import type {CacheConfig} from '../../src/configuration'
 
 describe('getCacheService selection logic', () => {
@@ -11,9 +10,7 @@ describe('getCacheService selection logic', () => {
     it('returns NoOpCacheService when cache is disabled', async () => {
         const {getCacheService} = await import('../../src/cache-service-loader')
         const mockConfig = {
-            isCacheDisabled: () => true,
-            getCacheProvider: () => CacheProvider.Enhanced,
-            isCacheLicenseAccepted: () => true
+            isCacheDisabled: () => true
         } as unknown as CacheConfig
 
         const service = await getCacheService(mockConfig)
@@ -32,19 +29,15 @@ describe('getCacheService selection logic', () => {
         expect(report).toContain('Cache was disabled')
     })
 
-    it('wraps BasicCacheService with LicenseWarningCacheService when cache-provider is basic', async () => {
+    it('returns BasicCacheService when cache is enabled', async () => {
         const {getCacheService} = await import('../../src/cache-service-loader')
+        const {BasicCacheService} = await import('../../src/cache-service-basic')
         const mockConfig = {
-            isCacheDisabled: () => false,
-            getCacheProvider: () => CacheProvider.Basic,
-            isCacheLicenseAccepted: () => false
+            isCacheDisabled: () => false
         } as unknown as CacheConfig
 
         const service = await getCacheService(mockConfig)
 
-        // The service should not be a bare BasicCacheService — it should be wrapped
-        // with LicenseWarningCacheService that appends the basic caching summary
-        const {BasicCacheService} = await import('../../src/cache-service-basic')
-        expect(service).not.toBeInstanceOf(BasicCacheService)
+        expect(service).toBeInstanceOf(BasicCacheService)
     })
 })

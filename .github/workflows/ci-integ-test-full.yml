@@ -7,7 +7,6 @@ on:
     - 'main'
     paths:
     - 'sources/dist/**'
-    - 'sources/vendor/gradle-actions-caching/**'
 
 concurrency:
   group: integ-test

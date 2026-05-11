@@ -57,9 +57,3 @@ jobs:
     with:
       runner-os: '${{ inputs.runner-os }}'
       skip-dist: ${{ inputs.skip-dist }}
-
-  basic-cache-provider:
-    uses: ./.github/workflows/integ-test-basic-cache-provider.yml
-    with:
-      runner-os: '${{ inputs.runner-os }}'
-      skip-dist: ${{ inputs.skip-dist }}
