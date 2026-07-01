@@ -17,6 +17,7 @@ env:
   SKIP_DIST: ${{ inputs.skip-dist }}
   # Requires a fresh cache entry each run
   GRADLE_BUILD_ACTION_CACHE_KEY_PREFIX: cache-cleanup-${{ inputs.cache-key-prefix }}-${{github.run_number}}
+  GRADLE_BUILD_ACTION_CACHE_KEY_JOB: cache-cleanup
 
 permissions:
   contents: read
@@ -36,7 +37,7 @@ jobs:
         egress-policy: audit
 
     - name: Checkout sources
-      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - name: Initialize integ-test
       uses: ./.github/actions/init-integ-test
 
@@ -50,6 +51,8 @@ jobs:
 
   # Second build will use the cache from the first build, but cleanup should remove unused artifacts
   cache-cleanup-assemble-build:
+    env:
+      GRADLE_BUILD_ACTION_CACHE_KEY_JOB_EXECUTION: ${{github.sha}}_1
     needs: cache-cleanup-full-build
     strategy:
       max-parallel: 1
@@ -64,7 +67,7 @@ jobs:
         egress-policy: audit
 
     - name: Checkout sources
-      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - name: Initialize integ-test
       uses: ./.github/actions/init-integ-test
 
@@ -78,6 +81,8 @@ jobs:
       run: ./gradlew --no-daemon --build-cache -Dcommons_math3_version="3.1.1" build
 
   cache-cleanup-check-clean-cache:
+    env:
+      GRADLE_BUILD_ACTION_CACHE_KEY_JOB_EXECUTION: ${{github.sha}}_2
     needs: cache-cleanup-assemble-build
     strategy:
       max-parallel: 1
@@ -92,7 +97,7 @@ jobs:
         egress-policy: audit
 
     - name: Checkout sources
-      uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     - name: Initialize integ-test
       uses: ./.github/actions/init-integ-test
 
