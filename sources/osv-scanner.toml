@@ -18,3 +18,39 @@ reason = "undici: WebSocket client exception; action does not use WebSockets"
 [[IgnoredVulns]]
 id = "GHSA-4992-7rv2-5pvq"
 reason = "undici: CRLF injection via upgrade option; not used by @actions/github or @actions/http-client"
+
+[[IgnoredVulns]]
+id = "GHSA-35p6-xmwp-9g52"
+reason = "undici v5 transitive via @actions/github, @actions/http-client, @actions/artifact, @actions/cache, @actions/core; HTTP header injection class — action only connects to trusted GitHub API and artifact storage endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-8xcm-r25x-g524"
+reason = "undici v5 transitive via @actions/github and @actions/http-client; HTTP smuggling requires attacker-controlled server — action only connects to trusted GitHub API and artifact storage endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-g8m3-5g58-fq7m"
+reason = "undici v5 transitive via @actions/github, @actions/http-client, @actions/artifact, @actions/cache; HTTP header injection class — action only connects to trusted GitHub API and artifact storage endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-m8rv-5g2x-5cg5"
+reason = "undici v5 transitive via @actions/github and @actions/http-client; response splitting class — action only connects to trusted GitHub API and artifact storage endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-p88m-4jfj-68fv"
+reason = "undici v5 transitive via @actions/github, @actions/http-client, @actions/artifact, @actions/cache; proxy auth header leak — action does not use proxies and only connects to trusted endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-v3r7-h72x-cjcm"
+reason = "undici v5 transitive via @actions/github and @actions/http-client; HTTP smuggling requires attacker-controlled server — action only connects to trusted GitHub API and artifact storage endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-vxpw-j846-p89q"
+reason = "undici v5 transitive via @actions/github, @actions/http-client, @actions/artifact, @actions/cache; cookie header leak — action does not use cookies and only connects to trusted endpoints"
+
+[[IgnoredVulns]]
+id = "GHSA-hmw2-7cc7-3qxx"
+reason = "form-data v2.5.5 transitive via @azure/ms-rest-js (used by @actions/artifact for Azure Blob Storage); multipart injection requires attacker-controlled filenames — artifact paths come from the action's own build outputs, not external input"
+
+[[IgnoredVulns]]
+id = "GHSA-w5hq-g745-h8pq"
+reason = "uuid v8.3.2 transitive via @azure/core-http and @azure/ms-rest-js (used by @actions/artifact); used internally for Azure request correlation IDs — not attacker-controllable and not exposed externally"
